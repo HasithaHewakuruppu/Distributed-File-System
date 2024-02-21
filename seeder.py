@@ -47,10 +47,16 @@ class Handler(FileSystemEventHandler):
         self.client_socket = client_socket
 
     def send_message(self, action, filepath):
-        # Extract filename from filepath
+        # Extract filename and size from filepath
         filename = os.path.basename(filepath)
+        filesize = os.path.getsize(filepath)  # Get the size of the file
         # Constructing and sending JSON formatted message
-        message = json.dumps({'type': action, 'filename': filename, 'filelocation': filepath}) + '\n' 
+        message = json.dumps({
+            'type': action,
+            'filename': filename,
+            'filelocation': filepath,
+            'filesize': filesize  # Add the file size here
+        }) + '\n'
         self.client_socket.sendall(message.encode('utf-8'))
 
     def on_created(self, event):

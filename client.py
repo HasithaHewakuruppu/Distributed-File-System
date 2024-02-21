@@ -24,7 +24,23 @@ def main():
 
             # Wait for and then receive the response from the server
             response = client_socket.recv(1024).decode('utf-8')  # Assuming response will be less than 1024 bytes
-            print("File exists on server:" if response == 'true' else "File does not exist on server.")
+            # After receiving the response from the server:
+            response_data = json.loads(response)
+
+            if response_data['exists']:
+                filesize = response_data['filesize']
+                print(f"File exists on server with size {filesize} bytes.")
+                # Ask the user if they want to download the file
+                download = input("Do you want to download the file? (yes/no): ")
+                if download.lower() == 'yes':
+                    # Send download request to the server
+                    download_message = json.dumps({'type': 'DOWNLOAD', 'filename': filename})
+                    client_socket.sendall(download_message.encode('utf-8'))
+                    # Placeholder for download functionality; assume server sends a confirmation message
+                    download_response = client_socket.recv(1024).decode('utf-8')
+                    print(download_response)  # Print the server's response
+            else:
+                print("File does not exist on server.")
 
 if __name__ == "__main__":
     main()

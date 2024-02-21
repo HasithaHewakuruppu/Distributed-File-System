@@ -23,8 +23,13 @@ def handle_seeder(connection, address, file_tracker):
                         filelocation = parsed_message['filelocation']
 
                         if action == "ADD":
-                            file_tracker[filename] = {'seeder': address, 'filelocation': filelocation}
-                            print(f"Added file {filename} from {address}")
+                            filesize = parsed_message['filesize']  # Retrieve the filesize from the message
+                            file_tracker[filename] = {
+                                'seeder': address,
+                                'filelocation': filelocation,
+                                'filesize': filesize  # Store the filesize in the file_tracker
+                            }
+                            print(f"Added file {filename} with size {filesize} bytes from {address}")
                         elif action == "DELETE":
                             if filename in file_tracker:
                                 del file_tracker[filename]
@@ -56,9 +61,22 @@ def handle_client(connection, address, file_tracker):
 
             if action == "SEARCH":
                 # Check if the file exists in the tracker and respond
-                response = 'true' if filename in file_tracker else 'false'
-                # TODO: Send the file to the client, for now just respond with the status
+                if filename in file_tracker:
+                    # File exists, send back affirmative response along with file size
+                    file_info = file_tracker[filename]
+                    response = json.dumps({'exists': True, 'filesize': file_info['filesize']})
+                else:
+                    # File does not exist, send back negative response
+                    response = json.dumps({'exists': False})
+                # Send the response to the client
                 connection.sendall(response.encode('utf-8'))
+            elif action == "DOWNLOAD":
+                # Placeholder for actual file download functionality
+                print(f"Client {address} requested to download {filename}")
+                # For now, just send a confirmation response back to the client
+                response = f"Starting download of {filename}..."
+                connection.sendall(response.encode('utf-8'))
+
     except Exception as e:
         print(f"Error with {address}: {e}")
     finally:

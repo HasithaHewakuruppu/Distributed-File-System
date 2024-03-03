@@ -19,7 +19,7 @@ These instructions will help you set up and run the project on your local machin
 3) Add some files into the DesignatedFolder
 4) Run the seeder code in another terminal
 5) Run the client code in another terminal
-6) Try requesting a file that is already in the DesignatedFolder
+6) Try requesting a file that is already in the DesignatedFolder from the client code
 7) Try requesting something not in the DesignatedFolder
 8) Try adding, deleting, and renaming contents in the DesignatedFolder
-9) Then try asking to see if your expectation of it being in the DesignatedFolder is matched when queried from the client
+9) Then try asking to see if your expectation of it being in the DesignatedFolder is matched when queried from the client code

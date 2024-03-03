@@ -2,7 +2,6 @@ import sys
 import socket
 
 def upload_file(session_id, file_path):
-    # Hardcoded Server 2 information
     SERVER2_HOST = '127.0.0.2'
     SERVER2_PORT = 65433
     print(f"Uploading {file_path} to Server 2 with session ID {session_id}...")
@@ -11,16 +10,11 @@ def upload_file(session_id, file_path):
         initial_message = f"seeder,{session_id},{file_path}"
         sock.sendall(initial_message.encode('utf-8'))
 
-    #     # Here, implement the logic to read the file and send it to the server
-    #     # with open(file_path, 'rb') as file_to_send:
-    #     #     while True:
-    #     #         bytes_read = file_to_send.read(1024)
-    #     #         if not bytes_read:
-    #     #             break  # File transfer complete
-    #     #         sock.sendall(bytes_read)
+        # Here, implement the logic to read the file and send it to the server
+        print("File upload completed.")
 
-    #     # Optionally wait for a confirmation message from Server 2
 
+########  DO NOT MODIFY BELOW THIS LINE  ########
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python seeder_server2_connector.py [session_id] [file_path]")
@@ -28,4 +22,4 @@ if __name__ == "__main__":
 
     session_id = sys.argv[1]
     file_path = sys.argv[2]
-    upload_file(session_id, file_path)
+    upload_file(session_id, file_path) # feel free to modify this function

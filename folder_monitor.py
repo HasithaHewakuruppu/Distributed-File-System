@@ -88,7 +88,10 @@ class Handler(FileSystemEventHandler):
     def send_message(self, action, filepath):
         # Extract filename and size from filepath
         filename = os.path.basename(filepath)
-        filesize = os.path.getsize(filepath)  # Get the size of the file
+        if action == 'ADD':
+            filesize = os.path.getsize(filepath)  # Get the size of the file
+        else:
+            filesize = 0
         # Constructing and sending JSON formatted message
         message = json.dumps({
             'type': action,
@@ -113,8 +116,9 @@ class Handler(FileSystemEventHandler):
             self.send_message('ADD', event.dest_path)
 
 if __name__ == '__main__':
-    SERVER_HOST = '127.0.0.1'  # Server's IP address
-    SERVER_PORT = 65432        # Server's port
+    # localhost: '127.0.0.1'
+    SERVER_HOST = '127.0.0.1'       # Server's IP address
+    SERVER_PORT = 65420            # Server's port
     w = Watcher((SERVER_HOST, SERVER_PORT))
     w.run()
 

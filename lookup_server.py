@@ -122,6 +122,6 @@ def start_server(host, port):
                 client_conn.close()
 
 if __name__ == "__main__":
-    HOST = '127.0.0.1'
-    PORT = 65432
+    HOST = ''
+    PORT = 65420
     start_server(HOST, PORT)

@@ -1,5 +1,6 @@
-##### FEEL FREE TO MODIFY THIS CODE AS YOU SEE FIT, ENTIRELY IF YOU WANT #####
+# relay_server.py
 
+##### FEEL FREE TO MODIFY THIS CODE AS YOU SEE FIT, ENTIRELY IF YOU WANT #####
 import socket
 import threading
 

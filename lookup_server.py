@@ -1,8 +1,10 @@
 import socket
 import threading
 import json
+import uuid
 
-def handle_seeder(connection, address, file_tracker):
+def handle_seeder(connection, address, file_tracker, active_seeders):
+    active_seeders[address] = connection  # Store the seeder's connection
     print(f"Seeder connected from {address}")
     try:
         buffer = ""
@@ -45,37 +47,43 @@ def handle_seeder(connection, address, file_tracker):
             del file_tracker[key]
         print(f"Removed all files associated with {address}")
         connection.close()
+        active_seeders[address] = connection
         print(f"Connection closed for {address}")
 
-def handle_client(connection, address, file_tracker):
+def handle_client(connection, address, file_tracker, active_seeders):
     print(f"Client connected from {address}")
     try:
         while True:
             data = connection.recv(1024).decode('utf-8')
             if not data:
-                break  # No more data from client
+                break
 
             message = json.loads(data)
             action = message['type']
             filename = message['filename']
 
             if action == "SEARCH":
-                # Check if the file exists in the tracker and respond
                 if filename in file_tracker:
-                    # File exists, send back affirmative response along with file size
                     file_info = file_tracker[filename]
                     response = json.dumps({'exists': True, 'filesize': file_info['filesize']})
                 else:
-                    # File does not exist, send back negative response
                     response = json.dumps({'exists': False})
-                # Send the response to the client
                 connection.sendall(response.encode('utf-8'))
+
             elif action == "DOWNLOAD":
-                # Placeholder for actual file download functionality
-                print(f"Client {address} requested to download {filename}")
-                # For now, just send a confirmation response back to the client
-                response = f"Starting download of {filename}..."
-                connection.sendall(response.encode('utf-8'))
+                if filename in file_tracker:
+                    # Generate a unique session ID for this transfer
+                    session_id = generate_unique_session_id()  
+                    file_info = file_tracker[filename]
+                   
+                    session_info = {'session_id': session_id, 'file_path': file_info['filelocation']}
+                    # Inform the client about session details
+                    connection.sendall(json.dumps({'type': 'TRANSFER', 'session': session_info}).encode('utf-8'))
+                    # Inform the folder_monitor about session details
+                    seeder_addr = file_info['seeder']
+                    if seeder_addr in active_seeders:  
+                        seeder_connection = active_seeders[seeder_addr]
+                        seeder_connection.sendall(json.dumps({'type': 'TRANSFER', 'session': session_info}).encode('utf-8'))
 
     except Exception as e:
         print(f"Error with {address}: {e}")
@@ -83,8 +91,14 @@ def handle_client(connection, address, file_tracker):
         connection.close()
         print(f"Connection closed for {address}")
 
+def generate_unique_session_id():
+    # Generate a random UUID (UUID4)
+    session_id = uuid.uuid4()
+    return str(session_id)
+
 def start_server(host, port):
     file_tracker = {}  # Stores file information
+    active_seeders = {}  # Maps seeder addresses to their socket connections
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
         server_socket.bind((host, port))
@@ -96,10 +110,10 @@ def start_server(host, port):
             client_type = client_conn.recv(1024).decode('utf-8')  # Identifying the client type
 
             if client_type == 'seeder':
-                client_thread = threading.Thread(target=handle_seeder, args=(client_conn, client_addr, file_tracker))
+                client_thread = threading.Thread(target=handle_seeder, args=(client_conn, client_addr, file_tracker, active_seeders))
                 client_thread.start()
             elif client_type == 'client':
-                client_thread = threading.Thread(target=handle_client, args=(client_conn, client_addr, file_tracker))
+                client_thread = threading.Thread(target=handle_client, args=(client_conn, client_addr, file_tracker, active_seeders))
                 client_thread.start()
             else:
                 print(f"Unknown client type from {client_addr}")

@@ -2,6 +2,7 @@ import socket
 import json
 import sys
 import time
+import subprocess  
 
 def search_for_file(server_host, server_port, filename):
     # Establish connection to the server
@@ -40,8 +41,13 @@ def download_file(server_host, server_port, filename):
         # Check if the transfer process can start
         if response_data['type'] == 'TRANSFER':
             session_info = response_data['session']
-            # Here, we just return session info; actual download would be handled differently
-            return json.dumps({'success': True, 'session_id': session_info['session_id'], 'file_path': session_info['file_path']})
+            session_id = session_info['session_id']
+            file_path = session_info['file_path']
+
+            print(f"Starting download with session ID {session_id}.")
+            # For Windows:
+            subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(file_path)], shell=True)
+            return json.dumps({'success': True, 'session_id': session_id, 'file_path': file_path})
         else:
             return json.dumps({'success': False})
 

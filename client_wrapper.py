@@ -46,6 +46,14 @@ def download_file(server_host, server_port, filename):
             return json.dumps({'success': False})
 
 def main():
+    # you communicate with this script using command line arguments
+    # e.g. python client_wrapper.py search file.txt
+    # the output will be a JSON string indicating whether the file exists and its size
+    # and 
+    # e.g. python client_wrapper.py download file.txt
+    # the output will be a JSON string indicating whether the download was successful and the session info
+    # plus will trigger the leecher.py to open a new terminal and start downloading the file
+
     if len(sys.argv) < 3:
         print(json.dumps({'error': 'Insufficient arguments provided'}))
         sys.exit(1)

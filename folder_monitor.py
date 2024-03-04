@@ -22,6 +22,7 @@ class Watcher:
         self.client_socket.connect(self.server_address)
         # Send an initial message to identify this client as a 'seeder'
         self.client_socket.sendall(b'seeder')  # Sending 'seeder' as bytes
+        time.sleep(0.5)  # Wait for half a second
 
     def run(self):
         print("Starting the watcher...")

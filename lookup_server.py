@@ -109,7 +109,9 @@ def start_server(host, port):
 
         while True:
             client_conn, client_addr = server_socket.accept()
+            print(f"New connection from {client_addr}")
             client_type = client_conn.recv(1024).decode('utf-8')  # Identifying the client type
+            print(f"Received initial message: {client_type}")
 
             if client_type == 'seeder':
                 client_thread = threading.Thread(target=handle_seeder, args=(client_conn, client_addr, file_tracker, active_seeders))

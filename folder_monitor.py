@@ -118,8 +118,8 @@ class Handler(FileSystemEventHandler):
 
 if __name__ == '__main__':
     # localhost: '127.0.0.1'
-    SERVER_HOST = '127.0.0.1'      # Server's IP address
-    SERVER_PORT = 65420            # Server's port
+    SERVER_HOST = '35.224.31.170'     # Server's IP address
+    SERVER_PORT = 65420               # Server's port
     w = Watcher((SERVER_HOST, SERVER_PORT))
     w.run()
 

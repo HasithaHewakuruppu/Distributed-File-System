@@ -5,8 +5,8 @@ import subprocess
 
 def main():
     # localhost: '127.0.0.1'
-    server_host = '127.0.0.1'  # Server's IP address
-    server_port = 65420        # Server's port
+    server_host = '35.224.31.170' # Server's IP address
+    server_port = 65420           # Server's port
 
     # Establish connection to the server
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:

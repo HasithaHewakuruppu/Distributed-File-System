@@ -2,8 +2,8 @@ import socket
 import sys
 
 def download_file_from_server(session_id, save_path):
-    SERVER_HOST = '127.0.0.2'
-    SERVER_PORT = 65433
+    SERVER_HOST = '35.224.31.170'
+    SERVER_PORT = 65410
     buffer_size = 1024  # Match this with the relay server setting
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:

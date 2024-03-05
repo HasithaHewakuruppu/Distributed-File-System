@@ -70,7 +70,7 @@ def main():
     command = sys.argv[1].lower()
     filename = sys.argv[2]
     download_directory = sys.argv[3] if len(sys.argv) > 3 else './'
-    server_host = '127.0.0.1'
+    server_host = '35.224.31.170'
     server_port = 65420
 
     if command == 'search':

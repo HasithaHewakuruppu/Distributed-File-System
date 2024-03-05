@@ -105,7 +105,7 @@ class FileTransferServer:
         return filesize
 
 if __name__ == "__main__":
-    HOST = '127.0.0.2'  
-    PORT = 65433        
+    HOST = ''  
+    PORT = 65410        
     file_transfer_server = FileTransferServer(HOST, PORT)
     file_transfer_server.start_server()

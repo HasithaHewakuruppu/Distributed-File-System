@@ -31,7 +31,7 @@ def download_file_from_server(session_id, save_path):
             # Confirm file was received completely
             if total_received == filesize:
                 print(f"File successfully downloaded to {save_path}.")
-                sock.sendall(b"TRANSFER_COMPLETE")
+                # sock.sendall(b"TRANSFER_COMPLETE")
             else:
                 print("There was an error downloading the file.")
 

@@ -25,7 +25,7 @@ def search_for_file(server_host, server_port, filename):
         return json.dumps({'exists': response_data['exists'], 'filesize': response_data.get('filesize', 0)})
         
 
-def download_file(server_host, server_port, filename):
+def download_file(server_host, server_port, filename, path):
     # Similar structure to search_for_file, but requests a file download
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
         client_socket.connect((server_host, server_port))
@@ -48,7 +48,7 @@ def download_file(server_host, server_port, filename):
 
             print(f"Starting download with session ID {session_id}.")
             # For Windows:
-            download_path = './' + filename
+            download_path = path + filename
             subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher_hasitha.py', str(session_id), download_path], shell=True)
             return json.dumps({'success': True, 'session_id': session_id, 'file_path': file_path})
         else:

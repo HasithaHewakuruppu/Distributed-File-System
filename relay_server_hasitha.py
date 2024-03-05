@@ -87,7 +87,7 @@ class FileTransferServer:
 
             # Send a completion message to both seeder and leecher
             seeder_conn.sendall(b"TRANSFER_COMPLETE")
-            client_conn.sendall(b"TRANSFER_COMPLETE")
+            #client_conn.sendall(b"TRANSFER_COMPLETE")
 
         except Exception as e:
             print(f"Error during file transfer for session {session_id}: {e}")

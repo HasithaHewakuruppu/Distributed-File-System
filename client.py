@@ -38,12 +38,12 @@ def main():
                     if transfer_data['type'] == 'TRANSFER':
                         session_info = transfer_data['session']
                         session_id = session_info['session_id']
-                        file_path = session_info['file_path']
-
+                        # file_path = session_info['file_path']
+                        donwnload_file = './' + filename
                         print(f"Starting download with session ID {session_id}.")
                         # For Windows:
                         # subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(file_path)], shell=True)
-                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher_hasitha.py', str(session_id), './downloadedfile.txt'], shell=True)
+                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher_hasitha.py', str(session_id), donwnload_file], shell=True)
                         
             else:
                 print("File does not exist on server.")

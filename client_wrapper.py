@@ -48,7 +48,8 @@ def download_file(server_host, server_port, filename):
 
             print(f"Starting download with session ID {session_id}.")
             # For Windows:
-            subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(file_path)], shell=True)
+            download_path = './' + filename
+            subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher_hasitha.py', str(session_id), download_path], shell=True)
             return json.dumps({'success': True, 'session_id': session_id, 'file_path': file_path})
         else:
             return json.dumps({'success': False})
@@ -68,6 +69,7 @@ def main():
 
     command = sys.argv[1].lower()
     filename = sys.argv[2]
+    download_directory = sys.argv[3] if len(sys.argv) > 3 else './'
     server_host = '127.0.0.1'
     server_port = 65420
 
@@ -75,7 +77,7 @@ def main():
         result = search_for_file(server_host, server_port, filename)
         print(result)  # Print out the result as a JSON string
     elif command == 'download':
-        result = download_file(server_host, server_port, filename)
+        result = download_file(server_host, server_port, filename, download_directory)  # Pass the download directory as an argument
         print(result)  # Print out the result as a JSON string
     else:
         print(json.dumps({'error': 'Invalid command provided'}))

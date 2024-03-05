@@ -3,7 +3,7 @@ import os
 import sys
 
 def send_file_to_server(session_id, file_path):
-    SERVER_HOST = '35.224.31.170 '
+    SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
     buffer_size = 1024  # Match this with the relay server setting
 

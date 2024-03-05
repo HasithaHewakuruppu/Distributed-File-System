@@ -1,13 +1,12 @@
 # client.py
-
 import socket
 import json
 import subprocess  
 
 def main():
     # localhost: '127.0.0.1'
-    server_host = '127.0.0.1'       # Server's IP address
-    server_port = 65420            # Server's port
+    server_host = '127.0.0.1'  # Server's IP address
+    server_port = 65420        # Server's port
 
     # Establish connection to the server
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
@@ -43,7 +42,8 @@ def main():
 
                         print(f"Starting download with session ID {session_id}.")
                         # For Windows:
-                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(file_path)], shell=True)
+                        # subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(file_path)], shell=True)
+                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher_hasitha.py', str(session_id), './downloadedfile.txt'], shell=True)
                         
             else:
                 print("File does not exist on server.")

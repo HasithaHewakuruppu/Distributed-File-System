@@ -1,4 +1,4 @@
-# leeecher.py
+# leecher.py
 
 import sys
 import socket

@@ -1,6 +1,5 @@
 # relay_server.py
 
-##### FEEL FREE TO MODIFY THIS CODE AS YOU SEE FIT, ENTIRELY IF YOU WANT #####
 import socket
 import threading
 
@@ -56,13 +55,54 @@ class FileTransferServer:
         session = self.sessions[session_id]
         seeder_conn = session['seeder']
         client_conn = session['client']
-        filename = session['filename']
+        buffer_size = 1024  # You can adjust the buffer size based on your needs
 
-        # this is where the server would message the seeder to start sending the file to the server
-        # once the server receives the file, it would terminate the connection with the seeder
-        # and then the server would send the file to the client
-        # once the client receives the file, it would terminate the connection with the server
-        # and then the server would remove the session from the sessions dictionary
+        try:
+            # First, inform the seeder to start sending the file
+            seeder_conn.sendall(b"START")
+            # Get the expected filesize from the seeder
+            filesize_str = seeder_conn.recv(buffer_size).decode('utf-8')
+            filesize = int(filesize_str)
+
+            # Inform the leecher about the incoming file and its size
+            client_conn.sendall(f"{filesize}".encode('utf-8'))
+
+            # Wait for a signal from leecher indicating readiness to receive file
+            signal = client_conn.recv(buffer_size).decode('utf-8')
+            if signal != "READY":
+                raise Exception("Leecher not ready to receive the file.")
+
+            # Transfer the file from seeder to leecher in chunks
+            total_received = 0
+            while total_received < filesize:
+                chunk = seeder_conn.recv(buffer_size)
+                if not chunk:
+                    break  # No more data from the seeder
+                client_conn.sendall(chunk)
+                total_received += len(chunk)
+
+            # Ensure the entire file was transferred
+            if total_received != filesize:
+                raise Exception("File transfer was incomplete.")
+
+            # Send a completion message to both seeder and leecher
+            seeder_conn.sendall(b"TRANSFER_COMPLETE")
+            client_conn.sendall(b"TRANSFER_COMPLETE")
+
+        except Exception as e:
+            print(f"Error during file transfer for session {session_id}: {e}")
+        finally:
+            # Cleanup: close connections and remove session information
+            seeder_conn.close()
+            client_conn.close()
+            del self.sessions[session_id]
+            print(f"Transfer session {session_id} closed.")
+
+
+    def get_file_size_from_seeder(self, seeder_conn):
+        seeder_conn.sendall(b"SIZE")
+        filesize = int(seeder_conn.recv(1024).decode('utf-8'))  # Assuming the seeder sends back the size
+        return filesize
 
 if __name__ == "__main__":
     HOST = '127.0.0.2'  

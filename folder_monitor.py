@@ -56,7 +56,7 @@ class Watcher:
     def handle_transfer_instruction(self, session_id, file_path):
         # Start the new process
         print(f"Starting a new process for {file_path} with session ID {session_id}...")
-        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id), str(file_path)], shell=True)
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder_hasitha.py', str(session_id), str(file_path)], shell=True)
         #subprocess.Popen(['python', 'seeder.py', session_id, file_path])
 
     def listen_for_instructions(self):
@@ -118,7 +118,7 @@ class Handler(FileSystemEventHandler):
 
 if __name__ == '__main__':
     # localhost: '127.0.0.1'
-    SERVER_HOST = '127.0.0.1'       # Server's IP address
+    SERVER_HOST = '127.0.0.1'      # Server's IP address
     SERVER_PORT = 65420            # Server's port
     w = Watcher((SERVER_HOST, SERVER_PORT))
     w.run()

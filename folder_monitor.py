@@ -56,7 +56,7 @@ class Watcher:
     def handle_transfer_instruction(self, session_id, file_path):
         # Start the new process
         print(f"Starting a new process for {file_path} with session ID {session_id}...")
-        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder_hasitha.py', str(session_id), str(file_path)], shell=True)
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id), str(file_path)], shell=True)
         #subprocess.Popen(['python', 'seeder.py', session_id, file_path])
 
     def listen_for_instructions(self):

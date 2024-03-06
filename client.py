@@ -43,7 +43,7 @@ def main():
                         print(f"Starting download with session ID {session_id}.")
                         # For Windows:
                         # subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(file_path)], shell=True)
-                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher_hasitha.py', str(session_id), donwnload_file], shell=True)
+                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), donwnload_file], shell=True)
                         
             else:
                 print("File does not exist on server.")

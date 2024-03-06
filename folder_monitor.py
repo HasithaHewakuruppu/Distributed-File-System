@@ -8,6 +8,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import subprocess 
 import threading
+from Crypto.PublicKey import RSA
 
 class Watcher:
     DIRECTORY_TO_WATCH = "DesignatedFolder"  
@@ -16,6 +17,10 @@ class Watcher:
         self.observer = Observer()
         self.server_address = server_address
         self.client_socket = None
+        self.key_pair = RSA.generate(2048)  # Generate new RSA keys
+        self.public_key = self.key_pair.publickey().exportKey() 
+        self.private_key = self.key_pair.exportKey()    
+       
 
     def connect_to_server(self):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,7 +37,7 @@ class Watcher:
         instructions_thread = threading.Thread(target=self.listen_for_instructions)
         instructions_thread.start()
 
-        event_handler = Handler(self.client_socket)
+        event_handler = Handler(self.client_socket, self.public_key)
         self.send_initial_files(event_handler)
         self.observer.schedule(event_handler, self.DIRECTORY_TO_WATCH, recursive=True)
         self.observer.start()
@@ -53,10 +58,10 @@ class Watcher:
                 handler.send_message('ADD', filepath)
                 time.sleep(0.1)  # Add a short delay between sends
 
-    def handle_transfer_instruction(self, session_id, file_path):
+    def handle_transfer_instruction(self, session_id, file_path, public_key):
         # Start the new process
         print(f"Starting a new process for {file_path} with session ID {session_id}...")
-        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id), str(file_path)], shell=True)
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id), str(file_path), self.private_key.decode('utf-8'), public_key], shell=True)
         #subprocess.Popen(['python', 'seeder.py', session_id, file_path])
 
     def listen_for_instructions(self):
@@ -74,17 +79,19 @@ class Watcher:
                     session_info = message['session']
                     session_id = session_info['session_id']
                     file_path = session_info['file_path']  # Use the file path provided by Server 1
+                    public_key = session_info['public_key']  # Use the public key provided by Server 1
 
                     # Pass the session ID and file path to the method that handles the transfer
-                    self.handle_transfer_instruction(session_id, file_path)
+                    self.handle_transfer_instruction(session_id, file_path, public_key)
         except Exception as e:
             print(f"Error while listening for instructions: {e}")
         finally:
             self.client_socket.close()
 
 class Handler(FileSystemEventHandler):
-    def __init__(self, client_socket):
+    def __init__(self, client_socket, public_key):
         self.client_socket = client_socket
+        self.public_key = public_key    
 
     def send_message(self, action, filepath):
         # Extract filename and size from filepath
@@ -98,7 +105,9 @@ class Handler(FileSystemEventHandler):
             'type': action,
             'filename': filename,
             'filelocation': filepath,
-            'filesize': filesize  # Add the file size here
+            'filesize': filesize,  # Add the file size here
+            'public_key': self.public_key.decode('utf-8')
+
         }) + '\n'
         self.client_socket.sendall(message.encode('utf-8'))
 

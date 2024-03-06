@@ -25,13 +25,15 @@ def handle_seeder(connection, address, file_tracker, active_seeders):
                         action = parsed_message['type']
                         filename = parsed_message['filename']
                         filelocation = parsed_message['filelocation']
+                        public_key = parsed_message['public_key']
 
                         if action == "ADD":
                             filesize = parsed_message['filesize']  # Retrieve the filesize from the message
                             file_tracker[filename] = {
                                 'seeder': address,
                                 'filelocation': filelocation,
-                                'filesize': filesize  # Store the filesize in the file_tracker
+                                'filesize': filesize,  # Store the filesize in the file_tracker
+                                'public_key': public_key  # Store the public key in the file_tracker
                             }
                             print(f"Added file {filename} with size {filesize} bytes from {address}")
                         elif action == "DELETE":
@@ -75,17 +77,19 @@ def handle_client(connection, address, file_tracker, active_seeders):
             elif action == "DOWNLOAD":
                 if filename in file_tracker:
                     # Generate a unique session ID for this transfer
+                    public_key = message['public_key']    
                     session_id = generate_unique_session_id()  
                     file_info = file_tracker[filename]
                    
-                    session_info = {'session_id': session_id, 'file_path': file_info['filelocation']}
+                    session_info_seeder = {'session_id': session_id, 'file_path': file_info['filelocation'], 'public_key': public_key}
+                    session_info_leecher = {'session_id': session_id, 'file_path': file_info['filelocation'], 'public_key': file_info['public_key']}
                     # Inform the client about session details
-                    connection.sendall(json.dumps({'type': 'TRANSFER', 'session': session_info}).encode('utf-8'))
+                    connection.sendall(json.dumps({'type': 'TRANSFER', 'session': session_info_leecher}).encode('utf-8'))
                     # Inform the folder_monitor about session details
                     seeder_addr = file_info['seeder']
                     if seeder_addr in active_seeders:  
                         seeder_connection = active_seeders[seeder_addr]
-                        seeder_connection.sendall(json.dumps({'type': 'TRANSFER', 'session': session_info}).encode('utf-8'))
+                        seeder_connection.sendall(json.dumps({'type': 'TRANSFER', 'session': session_info_seeder}).encode('utf-8'))
 
     except Exception as e:
         print(f"Error with {address}: {e}")

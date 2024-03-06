@@ -2,11 +2,15 @@
 import socket
 import json
 import subprocess  
+from Crypto.PublicKey import RSA
 
 def main():
     # localhost: '127.0.0.1'
     server_host = '35.224.31.170' # Server's IP address
     server_port = 65420           # Server's port
+    key_pair = RSA.generate(2048)  # Generate new RSA keys
+    public_key = key_pair.publickey().exportKey() 
+    private_key = key_pair.exportKey() 
 
     # Establish connection to the server
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
@@ -30,7 +34,7 @@ def main():
                 print(f"File exists on server with size {filesize} bytes.")
                 download = input("Do you want to download the file? (yes/no): ")
                 if download.lower() == 'yes':
-                    download_message = json.dumps({'type': 'DOWNLOAD', 'filename': filename})
+                    download_message = json.dumps({'type': 'DOWNLOAD', 'filename': filename, 'public_key': public_key.decode('utf-8')})
                     client_socket.sendall(download_message.encode('utf-8'))
                     transfer_response = client_socket.recv(1024).decode('utf-8')
                     transfer_data = json.loads(transfer_response)
@@ -38,12 +42,12 @@ def main():
                     if transfer_data['type'] == 'TRANSFER':
                         session_info = transfer_data['session']
                         session_id = session_info['session_id']
+                        public_key = session_info['public_key']
                         # file_path = session_info['file_path']
                         donwnload_file = './' + filename
                         print(f"Starting download with session ID {session_id}.")
                         # For Windows:
-                        # subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(file_path)], shell=True)
-                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), donwnload_file], shell=True)
+                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), donwnload_file, private_key.decode('utf-8'), public_key], shell=True)
                         
             else:
                 print("File does not exist on server.")

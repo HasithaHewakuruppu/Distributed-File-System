@@ -1,3 +1,5 @@
+# seeder.py
+
 import socket
 import os
 import sys
@@ -39,9 +41,9 @@ def send_file_to_server(session_id, file_path):
             print(f"Error sending file: {e}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python seeder.py [session_id] [file_path]")
+    if len(sys.argv) != 4:
+        print("Usage: python seeder.py [session_id] [file_path] [secret_key]")  
         sys.exit(1)
 
-    session_id, file_path = sys.argv[1], sys.argv[2]
+    session_id, file_path, secret_key, public_key = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]  
     send_file_to_server(session_id, file_path)

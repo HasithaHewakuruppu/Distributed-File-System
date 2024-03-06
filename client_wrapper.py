@@ -59,7 +59,7 @@ def main():
     # e.g. python client_wrapper.py search file.txt
     # the output will be a JSON string indicating whether the file exists and its size
     # and 
-    # e.g. python client_wrapper.py download file.txt
+    # e.g. python client_wrapper.py download file.txt download_directory
     # the output will be a JSON string indicating whether the download was successful and the session info
     # plus will trigger the leecher.py to open a new terminal and start downloading the file
 

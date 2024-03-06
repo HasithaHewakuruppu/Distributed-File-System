@@ -61,9 +61,9 @@ class Watcher:
     def handle_transfer_instruction(self, session_id, file_path, public_key):
         # Start the new process
         print(f"Starting a new process for {file_path} with session ID {session_id}...")
-        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id), str(file_path), self.private_key.decode('utf-8'), public_key], shell=True)
-        #subprocess.Popen(['python', 'seeder.py', session_id, file_path])
-
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path)], shell=True)
+        #subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', '"' + str(session_id) + '"', '"' + str(file_path) + '"', '"' + str(self.private_key.decode('utf-8')) + '"', '"' + str(public_key) + '"'], shell=True)
+    
     def listen_for_instructions(self):
         print("Listening for instructions from the server...")
         try:

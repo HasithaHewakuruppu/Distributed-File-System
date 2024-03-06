@@ -44,11 +44,11 @@ def main():
                         session_id = session_info['session_id']
                         public_key = session_info['public_key']
                         # file_path = session_info['file_path']
-                        donwnload_file = './' + filename
+                        download_file = './Downloads/' + filename
                         print(f"Starting download with session ID {session_id}.")
                         # For Windows:
-                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), donwnload_file, private_key.decode('utf-8'), public_key], shell=True)
-                        
+                        subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(download_file)], shell=True)
+                        #subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', '"' + str(session_id) + '"', '"' + str(download_file) + '"', '"' + str(private_key.decode('utf-8')) + '"', '"' + str(public_key) + '"'], shell=True)
             else:
                 print("File does not exist on server.")
 

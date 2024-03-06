@@ -47,9 +47,11 @@ def download_file_from_server(session_id, save_path):
             print(f"Error downloading file: {e}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python leecher.py [session_id] [save_path]")
+    if len(sys.argv) != 5:
+        print("Usage: python leecher.py [session_id] [save_path] [private_key] [public_key]")
+        print("The arguments provided were: ", sys.argv)
         sys.exit(1)
 
-    session_id, save_path = sys.argv[1], sys.argv[2]
+    # session_id, save_path = sys.argv[1], sys.argv[2]
+    session_id, save_path, private_key, public_key = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
     download_file_from_server(session_id, save_path)

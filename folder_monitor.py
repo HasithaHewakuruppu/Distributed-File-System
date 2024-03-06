@@ -20,6 +20,7 @@ class Watcher:
         self.key_pair = RSA.generate(2048)  # Generate new RSA keys
         self.public_key = self.key_pair.publickey().exportKey() 
         self.private_key = self.key_pair.exportKey()    
+        self.private_key_decoded = self.private_key.decode('utf-8')
        
 
     def connect_to_server(self):
@@ -58,11 +59,11 @@ class Watcher:
                 handler.send_message('ADD', filepath)
                 time.sleep(0.1)  # Add a short delay between sends
 
-    def handle_transfer_instruction(self, session_id, file_path, public_key):
+    def handle_transfer_instruction(self, session_id, file_path, leecher_public_key):
         # Start the new process
         print(f"Starting a new process for {file_path} with session ID {session_id}...")
-        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path)], shell=True)
-        #subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', '"' + str(session_id) + '"', '"' + str(file_path) + '"', '"' + str(self.private_key.decode('utf-8')) + '"', '"' + str(public_key) + '"'], shell=True)
+        # subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path)], shell=True)
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path), str(self.private_key_decoded), str(leecher_public_key)], shell=True)
     
     def listen_for_instructions(self):
         print("Listening for instructions from the server...")
@@ -78,11 +79,11 @@ class Watcher:
                     # Extract the session information
                     session_info = message['session']
                     session_id = session_info['session_id']
-                    file_path = session_info['file_path']  # Use the file path provided by Server 1
-                    public_key = session_info['public_key']  # Use the public key provided by Server 1
+                    file_path = session_info['file_path']  
+                    leecher_public_key = session_info['public_key']  
 
                     # Pass the session ID and file path to the method that handles the transfer
-                    self.handle_transfer_instruction(session_id, file_path, public_key)
+                    self.handle_transfer_instruction(session_id, file_path, leecher_public_key)
         except Exception as e:
             print(f"Error while listening for instructions: {e}")
         finally:

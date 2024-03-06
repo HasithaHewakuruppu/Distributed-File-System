@@ -92,6 +92,7 @@ class Handler(FileSystemEventHandler):
     def __init__(self, client_socket, public_key):
         self.client_socket = client_socket
         self.public_key = public_key    
+        self.public_key_decoded = public_key.decode('utf-8')    
 
     def send_message(self, action, filepath):
         # Extract filename and size from filepath
@@ -106,7 +107,7 @@ class Handler(FileSystemEventHandler):
             'filename': filename,
             'filelocation': filepath,
             'filesize': filesize,  # Add the file size here
-            'public_key': self.public_key.decode('utf-8')
+            'public_key': self.public_key_decoded
 
         }) + '\n'
         self.client_socket.sendall(message.encode('utf-8'))

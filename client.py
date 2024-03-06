@@ -10,6 +10,7 @@ def main():
     server_port = 65420           # Server's port
     key_pair = RSA.generate(2048)  # Generate new RSA keys
     public_key = key_pair.publickey().exportKey() 
+    public_key_decoded = public_key.decode('utf-8')
     private_key = key_pair.exportKey() 
 
     # Establish connection to the server
@@ -34,7 +35,7 @@ def main():
                 print(f"File exists on server with size {filesize} bytes.")
                 download = input("Do you want to download the file? (yes/no): ")
                 if download.lower() == 'yes':
-                    download_message = json.dumps({'type': 'DOWNLOAD', 'filename': filename, 'public_key': public_key.decode('utf-8')})
+                    download_message = json.dumps({'type': 'DOWNLOAD', 'filename': filename, 'public_key': public_key_decoded})
                     client_socket.sendall(download_message.encode('utf-8'))
                     transfer_response = client_socket.recv(1024).decode('utf-8')
                     transfer_data = json.loads(transfer_response)

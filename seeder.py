@@ -1,8 +1,7 @@
-# seeder.py
-
 import socket
 import os
 import sys
+from tqdm import tqdm  # Import tqdm for the progress bar
 
 def send_file_to_server(session_id, file_path):
     SERVER_HOST = '35.224.31.170'
@@ -24,11 +23,17 @@ def send_file_to_server(session_id, file_path):
 
                 # Then start sending the file content
                 with open(file_path, 'rb') as f:
+                    # Initialize progress bar
+                    progress = tqdm(total=filesize, unit='B', unit_scale=True, desc="Uploading")
                     while True:
                         bytes_read = f.read(buffer_size)
                         if not bytes_read:
-                            break  # File transmission is done
+                            # File transmission is done
+                            progress.close()
+                            break
                         sock.sendall(bytes_read)
+                        # Update the progress bar
+                        progress.update(len(bytes_read))
                 
                 # Wait for a transfer completion message from the server
                 confirmation = sock.recv(buffer_size).decode('utf-8')
@@ -43,7 +48,6 @@ def send_file_to_server(session_id, file_path):
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print("Usage: python seeder.py [session_id] [file_path]")
-        print("the args given were: ", sys.argv)
         sys.exit(1)
 
     session_id, file_path = sys.argv[1], sys.argv[2]

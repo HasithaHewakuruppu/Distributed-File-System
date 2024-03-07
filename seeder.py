@@ -1,12 +1,13 @@
 import socket
 import os
 import sys
-from tqdm import tqdm  # Import tqdm for the progress bar
+from tqdm import tqdm  
 
 def send_file_to_server(session_id, file_path):
     SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
     buffer_size = 1024  # Match this with the relay server setting
+    
     # read the seeder_private_key.pem file and leeche_public_key.pem file
     # the private key is used to sign the file and the public key from the leecher is used to encrypt the file
     with open('./keys/seeder_private_key.pem', 'r') as file:

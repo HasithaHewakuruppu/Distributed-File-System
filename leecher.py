@@ -1,11 +1,12 @@
 import socket
 import sys
-from tqdm import tqdm  # Import tqdm for the progress bar
+from tqdm import tqdm  
 
 def download_file_from_server(session_id, save_path):
     SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
     buffer_size = 1024  # Match this with the relay server setting
+    
     # read the leecher_private_key.pem file and seeder_public_key.pem file
     # the private key is used to decrypt the file and the public key from the seeder is used to verify the file
     with open('./keys/leecher_private_key.pem', 'r') as file:

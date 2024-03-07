@@ -21,6 +21,9 @@ class Watcher:
         self.public_key = self.key_pair.publickey().exportKey() 
         self.private_key = self.key_pair.exportKey()    
         self.private_key_decoded = self.private_key.decode('utf-8')
+        # save private key to file to keys folder as private_key_seeder.pem
+        with open('keys/seeder_private_key.pem', 'w') as file:
+            file.write(self.private_key_decoded)
        
 
     def connect_to_server(self):
@@ -62,8 +65,8 @@ class Watcher:
     def handle_transfer_instruction(self, session_id, file_path, leecher_public_key):
         # Start the new process
         print(f"Starting a new process for {file_path} with session ID {session_id}...")
-        # subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path)], shell=True)
-        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path), str(self.private_key_decoded), str(leecher_public_key)], shell=True)
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path)], shell=True)
+        # subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path), str(self.private_key_decoded), str(leecher_public_key)], shell=True)
     
     def listen_for_instructions(self):
         print("Listening for instructions from the server...")
@@ -80,7 +83,11 @@ class Watcher:
                     session_info = message['session']
                     session_id = session_info['session_id']
                     file_path = session_info['file_path']  
-                    leecher_public_key = session_info['public_key']  
+                    leecher_public_key = session_info['public_key'] 
+                    # print(f"leechers public key: {leecher_public_key}") # remove later <--------
+                    # save leecher's public key to file to keys folder as leecher_public_key.pem
+                    with open('keys/leecher_public_key.pem', 'w') as file:
+                        file.write(leecher_public_key)
 
                     # Pass the session ID and file path to the method that handles the transfer
                     self.handle_transfer_instruction(session_id, file_path, leecher_public_key)
@@ -94,6 +101,7 @@ class Handler(FileSystemEventHandler):
         self.client_socket = client_socket
         self.public_key = public_key    
         self.public_key_decoded = public_key.decode('utf-8')    
+        # print(f"Public key decoded: {self.public_key_decoded}") # remove later <--------
 
     def send_message(self, action, filepath):
         # Extract filename and size from filepath

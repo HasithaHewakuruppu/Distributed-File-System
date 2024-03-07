@@ -7,6 +7,12 @@ def send_file_to_server(session_id, file_path):
     SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
     buffer_size = 1024  # Match this with the relay server setting
+    # read the seeder_private_key.pem file and leeche_public_key.pem file
+    # the private key is used to sign the file and the public key from the leecher is used to encrypt the file
+    with open('./keys/seeder_private_key.pem', 'r') as file:
+        seeder_private_key = file.read()
+    with open('./keys/leecher_public_key.pem', 'r') as file:
+        leecher_public_key = file.read()
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
@@ -46,11 +52,10 @@ def send_file_to_server(session_id, file_path):
             print(f"Error sending file: {e}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 5:
-        print("Usage: python seeder.py [session_id] [file_path] [private_key] [public_key]")
+    if len(sys.argv) != 3:
+        print("Usage: python seeder.py [session_id] [file_path]")
         print("The arguments provided were: ", sys.argv)
         sys.exit(1)
 
-    # session_id, file_path = sys.argv[1], sys.argv[2]
-    session_id, file_path, private_key, public_key = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+    session_id, file_path = sys.argv[1], sys.argv[2]
     send_file_to_server(session_id, file_path)

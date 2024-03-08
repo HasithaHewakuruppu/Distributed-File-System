@@ -65,7 +65,7 @@ def download_file(server_host, server_port, filename, path, public_key):
             
             print(f"Starting download with session ID {session_id}.")
             download_path = path + filename
-            subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), download_path], shell=True)
+            subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(download_path)], shell=True)
             return json.dumps({'success': True, 'session_id': session_id})
         else:
             return json.dumps({'success': False})

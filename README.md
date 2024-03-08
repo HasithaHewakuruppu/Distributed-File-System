@@ -12,21 +12,17 @@ and the client can query the server to check if a file exists.
 
 ## Getting Started
 
-These instructions will help you set up and run the project on your local machine for development and testing purposes.
+These instructions will help you set up and run the project on your machine.
 
-1) Run the server code in a terminal
-2) Create a folder called the DesignatedFolder in the same directory
-3) Add some files into the DesignatedFolder
-4) Run the seeder code in another terminal
-5) Run the client code in another terminal
-6) Try requesting a file that is already in the DesignatedFolder from the client code
-7) Try requesting something not in the DesignatedFolder
-8) Try adding, deleting, and renaming contents in the DesignatedFolder
-9) Then try asking to see if your expectation of it being in the DesignatedFolder is matched when queried from the client code
+1) Run the folder_monitor.py if you want to share files with peers.
+2) Run the client.py and type in the file you want to search including the file extension. 
+3) Then proceed with the prompts to download, just say yes.
+4) To test locally you can run folder_monitor.py and then search the folder_monitor.py contents and download them to the Dowloads folder
+5) Make sure to make a folder named Downloads within the code directory 
 
 ## Message for David
 
-1) You are responsible for seeder.py, leecher.py and relay_server.py
-2) Keep the " if __name__ == "__main__": " code unchanged but feel free to change the call functions within it
-3) Go havoc on relay_server.py and do what ever you think is fit, change it entirely if you want to
-4) Since you are using a mac you might have to do your subprocess code in the client.py and folder_monitor.py a bit differently 
+1) Currenty the file sharing is done through a relay server.
+2) Which is not scalable, ideally file sharing should be p2p.
+3) You can try implementing p2p if you have time.
+4) You can try other UDP hope punching or WebRTC (not sure if WebRTC is possible since we are not in the web)

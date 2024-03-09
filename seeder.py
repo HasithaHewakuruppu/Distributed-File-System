@@ -10,7 +10,16 @@ def send_file_to_server(session_id, file_path, private_key, public_key):
     SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
     buffer_size = 1024  # Match this with the relay server setting
-    
+
+    # should create AES key, this should be sent to the leecher.py via the relay_server.py
+    # But the AES key should be encrypted with the public key of the leecher
+    # Then the leecher should decrypt it with their private key, to get the AES key created by the seeder
+   
+    # so there should be some special message that is sent to the relay server to indicate that the seeder is sending the AES key to the leecher
+    # once the leeche receives the AES key, it should send a message to the seeder to indicating that it has received the AES key via the relay server
+    # once the seeder receives the message from the leecher, it should start encrypting the file chunks with the AES key and send it to the leecher via the relay server
+    # the leecher should then decrypt the file chunks with the AES key to get the original file
+
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.connect((SERVER_HOST, SERVER_PORT))

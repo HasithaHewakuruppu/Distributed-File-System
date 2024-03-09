@@ -1,18 +1,14 @@
+# leecher.py
+
 import socket
 import sys
-from tqdm import tqdm  
+from tqdm import tqdm
+import base64 
 
-def download_file_from_server(session_id, save_path):
+def download_file_from_server(session_id, save_path, private_key, public_key):
     SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
     buffer_size = 1024  # Match this with the relay server setting
-    
-    # read the leecher_private_key.pem file and seeder_public_key.pem file
-    # the private key is used to decrypt the file and the public key from the seeder is used to verify the file
-    with open('./keys/leecher_private_key.pem', 'r') as file:
-        leecher_private_key = file.read()
-    with open('./keys/seeder_public_key.pem', 'r') as file:
-        seeder_public_key = file.read()
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
@@ -54,10 +50,12 @@ def download_file_from_server(session_id, save_path):
             print(f"Error downloading file: {e}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python leecher.py [session_id] [save_path]")
-        print("The arguments provided were: ", sys.argv)
+    if len(sys.argv) != 5:  
+        print("Usage: python leecher.py [session_id] [save_path] [private_key_base64] [public_key_base64]")
         sys.exit(1)
 
-    session_id, save_path = sys.argv[1], sys.argv[2]
-    download_file_from_server(session_id, save_path)
+    session_id, save_path, private_key_base64, public_key_base64 = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+    # Decode the base64-encoded keys
+    leecher_private_key = base64.urlsafe_b64decode(private_key_base64).decode('utf-8')
+    seeder_public_key = base64.urlsafe_b64decode(public_key_base64).decode('utf-8')
+    download_file_from_server(session_id, save_path, leecher_private_key, seeder_public_key)

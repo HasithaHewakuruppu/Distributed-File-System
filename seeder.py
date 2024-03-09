@@ -1,20 +1,16 @@
+# seeder.py 
+
 import socket
 import os
 import sys
-from tqdm import tqdm  
+from tqdm import tqdm 
+import base64
 
-def send_file_to_server(session_id, file_path):
+def send_file_to_server(session_id, file_path, private_key, public_key):
     SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
     buffer_size = 1024  # Match this with the relay server setting
     
-    # read the seeder_private_key.pem file and leeche_public_key.pem file
-    # the private key is used to sign the file and the public key from the leecher is used to encrypt the file
-    with open('./keys/seeder_private_key.pem', 'r') as file:
-        seeder_private_key = file.read()
-    with open('./keys/leecher_public_key.pem', 'r') as file:
-        leecher_public_key = file.read()
-
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         try:
             sock.connect((SERVER_HOST, SERVER_PORT))
@@ -53,10 +49,12 @@ def send_file_to_server(session_id, file_path):
             print(f"Error sending file: {e}")
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
-        print("Usage: python seeder.py [session_id] [file_path]")
-        print("The arguments provided were: ", sys.argv)
+    if len(sys.argv) != 5:  # Change this to check for 5 arguments instead of 3
+        print("Usage: python seeder.py [session_id] [file_path] [private_key_base64] [public_key_base64]")
         sys.exit(1)
 
-    session_id, file_path = sys.argv[1], sys.argv[2]
-    send_file_to_server(session_id, file_path)
+    session_id, file_path, private_key_base64, public_key_base64 = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
+    # Decode the base64-encoded keys
+    seeder_private_key = base64.urlsafe_b64decode(private_key_base64).decode('utf-8')
+    leecher_public_key = base64.urlsafe_b64decode(public_key_base64).decode('utf-8')
+    send_file_to_server(session_id, file_path, seeder_private_key, leecher_public_key)

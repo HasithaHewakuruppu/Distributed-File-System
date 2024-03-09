@@ -9,6 +9,7 @@ from watchdog.events import FileSystemEventHandler
 import subprocess 
 import threading
 from Crypto.PublicKey import RSA
+import base64
 
 class Watcher:
     DIRECTORY_TO_WATCH = "DesignatedFolder"  
@@ -20,11 +21,7 @@ class Watcher:
         self.key_pair = RSA.generate(2048)  # Generate new RSA keys
         self.public_key = self.key_pair.publickey().exportKey() 
         self.private_key = self.key_pair.exportKey()    
-        self.private_key_decoded = self.private_key.decode('utf-8')
-        # save private key to file to keys folder as private_key_seeder.pem
-        with open('keys/seeder_private_key.pem', 'w') as file:
-            file.write(self.private_key_decoded)
-       
+        self.private_key_encoded = base64.urlsafe_b64encode(self.private_key).decode('utf-8')
 
     def connect_to_server(self):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,11 +59,10 @@ class Watcher:
                 handler.send_message('ADD', filepath)
                 time.sleep(0.1)  # Add a short delay between sends
 
-    def handle_transfer_instruction(self, session_id, file_path, leecher_public_key):
+    def handle_transfer_instruction(self, session_id, file_path, leecher_public_key_encoded):
         # Start the new process
         print(f"Starting a new process for {file_path} with session ID {session_id}...")
-        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path)], shell=True)
-        # subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id) , str(file_path), str(self.private_key_decoded), str(leecher_public_key)], shell=True)
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id), str(file_path), self.private_key_encoded, leecher_public_key_encoded], shell=True)
     
     def listen_for_instructions(self):
         print("Listening for instructions from the server...")
@@ -84,13 +80,10 @@ class Watcher:
                     session_id = session_info['session_id']
                     file_path = session_info['file_path']  
                     leecher_public_key = session_info['public_key'] 
-                    # print(f"leechers public key: {leecher_public_key}") # remove later <--------
-                    # save leecher's public key to file to keys folder as leecher_public_key.pem
-                    with open('keys/leecher_public_key.pem', 'w') as file:
-                        file.write(leecher_public_key)
+                    leecher_public_key_encoded = base64.urlsafe_b64encode(leecher_public_key.encode('utf-8')).decode('utf-8')
 
                     # Pass the session ID and file path to the method that handles the transfer
-                    self.handle_transfer_instruction(session_id, file_path, leecher_public_key)
+                    self.handle_transfer_instruction(session_id, file_path, leecher_public_key_encoded)
         except Exception as e:
             print(f"Error while listening for instructions: {e}")
         finally:

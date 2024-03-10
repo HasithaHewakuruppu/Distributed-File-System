@@ -60,18 +60,31 @@ class FileTransferServer:
         try:
             # First, inform the seeder to start sending the file
             seeder_conn.sendall(b"START")
-            # Get the expected filesize from the seeder
+
+            # Relay the encrypted AES key and IV from the seeder to the leecher
+            print("Waiting for AES key and IV from seeder...")
+            encrypted_keys_message = seeder_conn.recv(buffer_size)
+            client_conn.sendall(encrypted_keys_message)  # Send AES key and IV to leecher
+            print("AES key and IV have been sent to the leecher.")
+
+            # Relay the file size from the seeder to the leecher
+            print("Waiting for file size from seeder...")
             filesize_str = seeder_conn.recv(buffer_size).decode('utf-8')
             filesize = int(filesize_str)
-
-            # Inform the leecher about the incoming file and its size
             client_conn.sendall(f"{filesize}".encode('utf-8'))
+            print(f"File size {filesize} has been sent to the leecher.")
 
-            # Wait for a signal from leecher indicating readiness to receive file
+            # Wait for the leecher to signal readiness
+            print("Waiting for readiness signal from leecher...")
             signal = client_conn.recv(buffer_size).decode('utf-8')
             if signal != "READY":
                 raise Exception("Leecher not ready to receive the file.")
+            
+            # let the seeder know the leecher is ready
+            seeder_conn.sendall(b"READY")
+            print("Ready signal has been sent to the seeder.")
 
+            print(f"Transferring {session['filename']}...")
             # Transfer the file from seeder to leecher in chunks
             total_received = 0
             while total_received < filesize:

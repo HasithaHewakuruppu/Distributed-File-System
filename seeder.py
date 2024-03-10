@@ -93,3 +93,4 @@ if __name__ == "__main__":
 
     session_id, file_path, private_key_base64, public_key_base64 = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
     send_file_to_server(session_id, file_path, private_key_base64, public_key_base64)
+    

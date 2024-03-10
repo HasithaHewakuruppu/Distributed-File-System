@@ -84,6 +84,8 @@ class FileTransferServer:
             seeder_conn.sendall(b"READY")
             print("Ready signal has been sent to the seeder.")
 
+            # exchange of ice information should have below
+
             print(f"Transferring {session['filename']}...")
             # Transfer the file from seeder to leecher in chunks
             total_received = 0

@@ -52,6 +52,7 @@ def download_file_from_server(session_id, save_path, private_key_base64, public_
             progress = tqdm(total=filesize, unit='B', unit_scale=True, desc="Downloading")
             
             # Start receiving the file and writing it in encrypted form
+            # Below should be receiving via WebRTC 
             with open(encrypted_save_path, 'wb') as f:
                 total_received = 0
                 while total_received < filesize:

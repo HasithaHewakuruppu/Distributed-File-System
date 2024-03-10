@@ -4,3 +4,6 @@ keys/
 p2p_seeder.py
 p2p_leecher.py
 p2p_server.py
+build/
+dist/
+DistributedFileSystemGUI.spec

@@ -7,8 +7,6 @@ import subprocess
 from Crypto.PublicKey import RSA
 import base64
 import os
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 
 def choose_directory():
     directory = filedialog.askdirectory()

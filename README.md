@@ -22,4 +22,4 @@ These instructions will help you set up and run the project on your machine.
 
 ## Message for David
 
-Can you make gui for the client.py please, If you have time you can make one for the folder_monitor.py too
+p2p if you can ??

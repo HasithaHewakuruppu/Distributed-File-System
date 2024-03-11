@@ -1,3 +1,5 @@
+# client.py
+
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
@@ -7,6 +9,7 @@ import subprocess
 from Crypto.PublicKey import RSA
 import base64
 import os
+import sys
 
 def choose_directory():
     directory = filedialog.askdirectory()
@@ -47,6 +50,11 @@ def choose_file():
     file_path = filedialog.askopenfilename()
     fileToSearchEntry.delete(0, tk.END)  # Clear any previous value
     fileToSearchEntry.insert(0, file_path)
+
+def get_resource_path(relative_path):
+    # Get the absolute path to the resource, works for dev and for PyInstaller 
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 def searchAndDownloadFile(filename, downloadDirectory):
     if not os.path.exists(downloadDirectory):
@@ -92,15 +100,22 @@ def searchAndDownloadFile(filename, downloadDirectory):
                     download_file = downloadDirectory + '/' + filename
                     print(f"Starting download with session ID {session_id}.")
                     # For Windows:
-                    subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(download_file), private_key_encoded, seeder_public_key_encoded], shell=True)
+                    # old code
+                    # subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(download_file), private_key_encoded, seeder_public_key_encoded], shell=True)
+                    # new code
+                    subprocess.Popen(['start', 'cmd', '/k', sys.executable, get_resource_path('leecher.py'), str(session_id), str(download_file), private_key_encoded, seeder_public_key_encoded], shell=True)
         else:
             messagebox.showinfo("Error", "File not found in the system...")
 
 def toggleFileMonitor(monitorDirectory):
     if not os.path.exists(monitorDirectory):
         messagebox.showinfo("ERROR",f"The directory '{monitorDirectory}' does not exist.")
-        return    
-    subprocess.Popen(['start', 'cmd', '/k', 'python', 'folder_monitor_gui.py', monitorDirectory], shell=True)
+        return
+    # For Windows:
+    # old code    
+    # subprocess.Popen(['start', 'cmd', '/k', 'python', 'folder_monitor_gui.py', monitorDirectory], shell=True)
+    # new code
+    subprocess.Popen(['start', 'cmd', '/k', sys.executable, get_resource_path('folder_monitor_gui.py'), monitorDirectory], shell=True)
 
 def initalizeConfig():
     pathVals = ["", ""]

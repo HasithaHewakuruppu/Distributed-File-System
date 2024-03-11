@@ -7,3 +7,4 @@ p2p_server.py
 build/
 dist/
 DistributedFileSystemGUI.spec
+Config.txt

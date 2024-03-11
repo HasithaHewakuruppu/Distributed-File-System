@@ -103,7 +103,7 @@ def searchAndDownloadFile(filename, downloadDirectory):
                     # old code
                     # subprocess.Popen(['start', 'cmd', '/k', 'python', 'leecher.py', str(session_id), str(download_file), private_key_encoded, seeder_public_key_encoded], shell=True)
                     # new code
-                    subprocess.Popen(['start', 'cmd', '/k', sys.executable, get_resource_path('leecher.py'), str(session_id), str(download_file), private_key_encoded, seeder_public_key_encoded], shell=True)
+                    subprocess.Popen(['start', 'cmd', '/k', 'python', get_resource_path('leecher.py'), str(session_id), str(download_file), private_key_encoded, seeder_public_key_encoded], shell=True)
         else:
             messagebox.showinfo("Error", "File not found in the system...")
 
@@ -115,7 +115,7 @@ def toggleFileMonitor(monitorDirectory):
     # old code    
     # subprocess.Popen(['start', 'cmd', '/k', 'python', 'folder_monitor_gui.py', monitorDirectory], shell=True)
     # new code
-    subprocess.Popen(['start', 'cmd', '/k', sys.executable, get_resource_path('folder_monitor_gui.py'), monitorDirectory], shell=True)
+    subprocess.Popen(['start', 'cmd', '/k', 'python', get_resource_path('folder_monitor_gui.py'), monitorDirectory], shell=True)
 
 def initalizeConfig():
     pathVals = ["", ""]

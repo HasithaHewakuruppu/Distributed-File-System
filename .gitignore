@@ -8,3 +8,4 @@ build/
 dist/
 DistributedFileSystemGUI.spec
 Config.txt
+ExeFiles/

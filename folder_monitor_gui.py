@@ -59,19 +59,16 @@ class Watcher:
                 handler.send_message('ADD', filepath)
                 time.sleep(0.1)  # Add a short delay between sends
     
-    def get_resource_path(self, relative_path):
-        # Get the absolute path to the resource, works for dev and for PyInstaller 
-        base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
-        return os.path.join(base_path, relative_path)
-
     def handle_transfer_instruction(self, session_id, file_path, leecher_public_key_encoded):
         # Start the new process
         print(f"Starting a new process for {file_path} with session ID {session_id}...")
-        # For Windows
+    # For Windows
         # old code
         # subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id), str(file_path), self.private_key_encoded, leecher_public_key_encoded], shell=True)
         # new code
-        subprocess.Popen(['start', 'cmd', '/k', 'python', self.get_resource_path('seeder.py'), str(session_id), str(file_path), self.private_key_encoded, leecher_public_key_encoded], shell=True)
+        subprocess.Popen(['start', 'cmd', '/k', 'python', 'seeder.py', str(session_id), str(file_path), self.private_key_encoded, leecher_public_key_encoded], shell=True)
+        # exe code
+        # subprocess.Popen(['start', 'cmd', '/k', 'seeder.exe', str(session_id), str(file_path), self.private_key_encoded, leecher_public_key_encoded], shell=True)
 
     def listen_for_instructions(self):
         print("Listening for instructions from the server...")

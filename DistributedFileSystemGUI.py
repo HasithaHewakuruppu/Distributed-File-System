@@ -12,19 +12,43 @@ from watchdog.events import FileSystemEventHandler
 
 def choose_directory():
     directory = filedialog.askdirectory()
-    directory_entry.delete(0, tk.END)  # Clear any previous value
-    directory_entry.insert(0, directory)
+    downloadLocationEntry.delete(0, tk.END)  # Clear any previous value
+    downloadLocationEntry.insert(0, directory)
+    # Write the chosen directory to the second line of a text file
+    try:
+        with open("Config.txt", 'r+') as file:
+            lines = file.readlines()
+            for i, line in enumerate(lines):
+                if line.startswith("DownloadPath="):
+                    lines[i] = "DownloadPath= " + directory + '\n'
+                    break      
+            file.seek(0)
+            file.writelines(lines)
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 
 def choose_monitor_directory():
     directory = filedialog.askdirectory()
     folderToMonitorEntry.delete(0, tk.END)  # Clear any previous value
     folderToMonitorEntry.insert(0, directory)
-
+    # Write the chosen directory to the second line of a text file
+    try:
+        with open("Config.txt", 'r+') as file:
+            lines = file.readlines()
+            for i, line in enumerate(lines):
+                if line.startswith("FolderMonitorPath="):
+                    lines[i] = "FolderMonitorPath= " + directory + '\n'
+                    break      
+            file.seek(0)
+            file.writelines(lines)
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def choose_file():
     file_path = filedialog.askopenfilename()
-    file_entry.delete(0, tk.END)  # Clear any previous value
-    file_entry.insert(0, file_path)
+    fileToSearchEntry.delete(0, tk.END)  # Clear any previous value
+    fileToSearchEntry.insert(0, file_path)
 
 def searchAndDownloadFile(filename, downloadDirectory):
     if not os.path.exists(downloadDirectory):
@@ -80,6 +104,59 @@ def toggleFileMonitor(monitorDirectory):
         return    
     subprocess.Popen(['start', 'cmd', '/k', 'python', 'folder_monitor_gui.py', monitorDirectory], shell=True)
 
+def initalizeConfig():
+    pathVals = ["", ""]
+    if os.path.exists("Config.txt"):
+        validateConfigFile()
+        with open('Config.txt', 'r') as file:
+            # Read each line
+            for line in file:
+                # Check if the line starts with "DownloadPath="
+                if line.startswith("DownloadPath="):
+                    # Extract the string after "DownloadPath=" and store it in array slot 0
+                    pathVals[0] = line.split("=")[1].strip()
+                # Check if the line starts with "FolderMonitorPath="
+                elif line.startswith("FolderMonitorPath="):
+                    # Extract the string after "FolderMonitorPath=" and store it in array slot 1
+                    pathVals[1] = line.split("=")[1].strip()
+        downloadLocationEntry.insert(0, pathVals[0])
+        folderToMonitorEntry.insert(0, pathVals[1])
+    else:
+        try:
+            # Try to open the file in write mode
+            with open('Config.txt', 'w') as file:
+                file.write("DownloadPath= \nFolderMonitorPath= ")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+def validateConfigFile():
+    illegalMod = False
+    try:
+        with open("Config.txt", 'r+') as file:
+            lines = file.readlines()
+            if len(lines) < 2:
+                illegalMod = True
+                with open('Config.txt', 'w') as file:
+                    file.write("DownloadPath= \nFolderMonitorPath= ")
+            else:
+                # Check first line for 'DownloadPath='
+                if not lines[0].startswith('DownloadPath='):
+                    lines[0] = 'DownloadPath=\n'
+                    illegalMod = True
+                # Check second line for 'FolderMonitorPath='
+                if not lines[1].startswith('FolderMonitorPath='):
+                    lines[1] = 'FolderMonitorPath=\n'
+                    illegalMod = True
+                # Keep only the first two lines
+                lines = lines[:2]
+                file.seek(0)  # go back to the start of the file
+                file.writelines(lines)  # write the modified lines back to the file
+                file.truncate()  # remove any remaining content
+        if illegalMod:
+            messagebox.showinfo("Error", "Config file format invalid, file was reset...")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
 # Create the main Tkinter window
 root = tk.Tk()
 root.title("Distributed File System Client GUI")
@@ -92,25 +169,25 @@ title_label.grid(row=0, columnspan=3, padx=10, pady=10)
 directory_label = tk.Label(root, text="Download Location:")
 directory_label.grid(row=1, column=0, padx=10, pady=10, sticky=tk.W)
 
-directory_entry = tk.Entry(root, width=50)
-directory_entry.grid(row=1, column=1, padx=10, pady=10)
+downloadLocationEntry = tk.Entry(root, width=50)
+downloadLocationEntry.grid(row=1, column=1, padx=10, pady=10)
 
 directory_button = tk.Button(root, text="Search Directory", command=choose_directory)
 directory_button.grid(row=1, column=2, padx=10, pady=10)
 
-# File selection
+# File to search selection
 file_label = tk.Label(root, text="File to search:")
 file_label.grid(row=2, column=0, padx=10, pady=10, sticky=tk.W)
 
-file_entry = tk.Entry(root, width=50)
-file_entry.grid(row=2, column=1, padx=10, pady=10)
+fileToSearchEntry = tk.Entry(root, width=50)
+fileToSearchEntry.grid(row=2, column=1, padx=10, pady=10)
 
-file_button = tk.Button(root, text="Search File", command=lambda: searchAndDownloadFile(file_entry.get(), directory_entry.get()))
+file_button = tk.Button(root, text="Search File", command=lambda: searchAndDownloadFile(fileToSearchEntry.get(), downloadLocationEntry.get()))
 file_button.grid(row=2, column=2, padx=10, pady=10)
 
 #File Monitor Components
-title_label = tk.Label(root, text="Folder Monitor", font=("Helvetica", 10, "bold"))
-title_label.grid(row=3, columnspan=3, padx=10, pady=10)
+fileMonitorTitle = tk.Label(root, text="Folder Monitor", font=("Helvetica", 10, "bold"))
+fileMonitorTitle.grid(row=3, columnspan=3, padx=10, pady=10)
 
 folderToMonitorLabel = tk.Label(root, text="File to monitor:")
 folderToMonitorLabel.grid(row=4, column=0, padx=10, pady=10, sticky=tk.W)
@@ -124,6 +201,5 @@ folderToMonitorButton.grid(row=4, column=2, padx=10, pady=10)
 activateMonitorButton = tk.Button(root, text="Launch Monitor", command=lambda: toggleFileMonitor(folderToMonitorEntry.get()))
 activateMonitorButton.grid(row=5, column=2, padx=10, pady=10)
 
+initalizeConfig()
 root.mainloop()
-
-

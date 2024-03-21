@@ -13,27 +13,27 @@ def handle_seeder(connection, address, file_tracker, active_seeders):
         while True:
             data = connection.recv(1024).decode('utf-8')
             if not data:
-                break  # No more data from seeder
+                break                                    # No more data from seeder, this happens when the seeder is disconnected
 
-            buffer += data  # Append new data to buffer
-            while '\n' in buffer:  # Check if there are complete messages separated by newlines
+            buffer += data                               # Append new data to buffer
+            while '\n' in buffer:                        # Check if there are complete messages separated by newlines
                 message, buffer = buffer.split('\n', 1)  # Split on the first newline
-                if message:  # Check if the message is not empty
+                if message:                              # Check if the message is not empty, prevents JSON decode error
                     try:
                         # Parse the complete message from JSON format
                         parsed_message = json.loads(message)
                         action = parsed_message['type']
                         filename = parsed_message['filename']
+                        filesize = parsed_message['filesize'] 
                         filelocation = parsed_message['filelocation']
-                        public_key = parsed_message['public_key']
+                        public_key = parsed_message['public_key']  # was supposed to be used to verify the sender signature, but was never implemented
 
-                        if action == "ADD":
-                            filesize = parsed_message['filesize']  # Retrieve the filesize from the message
+                        if action == "ADD": 
                             file_tracker[filename] = {
                                 'seeder': address,
                                 'filelocation': filelocation,
-                                'filesize': filesize,  # Store the filesize in the file_tracker
-                                'public_key': public_key  # Store the public key in the file_tracker
+                                'filesize': filesize, 
+                                'public_key': public_key  
                             }
                             print(f"Added file {filename} with size {filesize} bytes from {address}")
                         elif action == "DELETE":
@@ -86,8 +86,8 @@ def handle_client(connection, address, file_tracker, active_seeders):
                     # Inform the client about session details
                     connection.sendall(json.dumps({'type': 'TRANSFER', 'session': session_info_leecher}).encode('utf-8'))
                     # Inform the folder_monitor about session details
-                    seeder_addr = file_info['seeder']
-                    if seeder_addr in active_seeders:  
+                    seeder_addr = file_info['seeder'] 
+                    if seeder_addr in active_seeders:  # check done to prevent potential error 
                         seeder_connection = active_seeders[seeder_addr]
                         seeder_connection.sendall(json.dumps({'type': 'TRANSFER', 'session': session_info_seeder}).encode('utf-8'))
 

@@ -40,7 +40,7 @@ class Watcher:
 
         event_handler = Handler(self.client_socket, self.public_key)
         self.send_initial_files(event_handler)
-        self.observer.schedule(event_handler, self.DIRECTORY_TO_WATCH, recursive=True)
+        self.observer.schedule(event_handler, self.DIRECTORY_TO_WATCH, recursive=True) # Enable recursive watching, such as subdirectories in designated folder
         self.observer.start()
         try:
             while True:
@@ -108,9 +108,8 @@ class Handler(FileSystemEventHandler):
             'type': action,
             'filename': filename,
             'filelocation': filepath,
-            'filesize': filesize,  # Add the file size here
-            'public_key': self.public_key_decoded
-
+            'filesize': filesize,  
+            'public_key': self.public_key_decoded # this is was supposed to be used to verify the sender signature, but was never implemented
         }) + '\n'
         self.client_socket.sendall(message.encode('utf-8'))
 

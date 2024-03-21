@@ -7,7 +7,7 @@ class FileTransferServer:
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.sessions = {}  # key: session_id, value: dict with seeder, client, filename
+        self.sessions = {}  # session_id: {seeder: conn, client: conn, filename: str}
 
     def start_server(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
@@ -55,7 +55,7 @@ class FileTransferServer:
         session = self.sessions[session_id]
         seeder_conn = session['seeder']
         client_conn = session['client']
-        buffer_size = 1024  # You can adjust the buffer size based on your needs
+        buffer_size = 1024  
 
         try:
             # First, inform the seeder to start sending the file
@@ -83,8 +83,6 @@ class FileTransferServer:
             # let the seeder know the leecher is ready
             seeder_conn.sendall(b"READY")
             print("Ready signal has been sent to the seeder.")
-
-            # exchange of ice information should have below
 
             print(f"Transferring {session['filename']}...")
             # Transfer the file from seeder to leecher in chunks

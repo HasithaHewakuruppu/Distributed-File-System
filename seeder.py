@@ -13,7 +13,7 @@ import time
 def send_file_to_server(session_id, file_path, private_key_base64, public_key_base64):
     SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
-    buffer_size = 1024  # Match this with the relay server setting
+    buffer_size = 1024  
 
     # Unicode check mark and cross symbols for status updates
     check_mark = '\u2713'
@@ -65,7 +65,7 @@ def send_file_to_server(session_id, file_path, private_key_base64, public_key_ba
                 print(f"Sending encrypted file {file_path}...")
                 progress = tqdm(total=filesize, unit='B', unit_scale=True, desc="Uploading")
 
-                # This should be sent in p2p now using WebRTC
+                
                 total_sent = 0  
                 while total_sent < filesize:
                     chunk = encrypted_content[total_sent:total_sent+buffer_size] 

@@ -11,7 +11,7 @@ from Crypto.PublicKey import RSA
 def download_file_from_server(session_id, save_path, private_key_base64, public_key_base64):
     SERVER_HOST = '35.224.31.170'
     SERVER_PORT = 65410
-    buffer_size = 1024  # Match this with the relay server setting
+    buffer_size = 1024  
 
     # Unicode check mark and cross symbols for status updates
     check_mark = '\u2713'  
@@ -52,7 +52,6 @@ def download_file_from_server(session_id, save_path, private_key_base64, public_
             progress = tqdm(total=filesize, unit='B', unit_scale=True, desc="Downloading")
             
             # Start receiving the file and writing it in encrypted form
-            # Below should be receiving via WebRTC 
             with open(encrypted_save_path, 'wb') as f:
                 total_received = 0
                 while total_received < filesize:

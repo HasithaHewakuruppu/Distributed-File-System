@@ -7,36 +7,41 @@ class FileTransferServer:
     def __init__(self, host, port):
         self.host = host
         self.port = port
-        self.sessions = {}  # session_id: {seeder: conn, client: conn, filename: str}
+        self.sessions = {}  # session_id: {seeder: conn, client: conn, filename: str}, maintains the unique session between seeder and leecher
 
+    # Start the server binding to port, and listen for incoming connections
     def start_server(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
             server_socket.bind((self.host, self.port))
-            server_socket.listen(5)
+            server_socket.listen()
             print(f"File Transfer Server is listening on {self.host}:{self.port}")
 
             while True:
                 client_conn, client_addr = server_socket.accept()
                 print(f"Connection from {client_addr}")
+                # Create a new thread to handle each incoming connection
                 threading.Thread(target=self.handle_connection, args=(client_conn,)).start()
 
     def handle_connection(self, connection):
         try:
-            # Initial message should contain: client type, session ID, filename
+            # Initial message from should contain: client type, session ID, filename
+            # This message is sent by both seeder and client/leecher
             initial_message = connection.recv(1024).decode('utf-8')
             client_type, session_id, filename = initial_message.split(',')
 
             print(f"Received {client_type} for session {session_id}")
 
+            # Create a new session if it doesn't exist, this is created by the first person to join the session
             if session_id not in self.sessions:
                 self.sessions[session_id] = {'seeder': None, 'client': None, 'filename': filename}
 
+            # Each connecting user type saves their connection in the session dictionary
             if client_type == 'seeder':
                 self.sessions[session_id]['seeder'] = connection
-                self.check_ready_to_transfer(session_id)
+                self.check_ready_to_transfer(session_id) # checks if both seeder and client are connected to the relay server
             elif client_type == 'client':
                 self.sessions[session_id]['client'] = connection
-                self.check_ready_to_transfer(session_id)
+                self.check_ready_to_transfer(session_id) # checks if both seeder and client are connected to the relay server
         except Exception as e:
             print(f"Error handling connection: {e}")
         finally:
@@ -45,20 +50,22 @@ class FileTransferServer:
 
     def check_ready_to_transfer(self, session_id):
         session = self.sessions[session_id]
-        if session['seeder'] and session['client']: # checks if both seeder and client are ready
+         # If both the seeder and leecher are connected, 
+         # Then it starts the file transfer as a new thread by calling the transfer_file method
+        if session['seeder'] and session['client']: 
             print(f"Starting file transfer for session {session_id}")
-            # call the transfer_file method in another thread, 
             # this will be called by the last person to join the session
             threading.Thread(target=self.transfer_file, args=(session_id,)).start()
 
     def transfer_file(self, session_id):
+        # extract the seeder and client connections from the session
         session = self.sessions[session_id]
         seeder_conn = session['seeder']
         client_conn = session['client']
         buffer_size = 1024  
 
         try:
-            # First, inform the seeder to start sending the file
+            # First, inform the seeder to start sending the file, since now both seeder and leecher are connected
             seeder_conn.sendall(b"START")
 
             # Relay the encrypted AES key and IV from the seeder to the leecher
@@ -112,13 +119,8 @@ class FileTransferServer:
             print(f"Transfer session {session_id} closed.")
 
 
-    def get_file_size_from_seeder(self, seeder_conn):
-        seeder_conn.sendall(b"SIZE")
-        filesize = int(seeder_conn.recv(1024).decode('utf-8'))  # Assuming the seeder sends back the size
-        return filesize
-
 if __name__ == "__main__":
-    HOST = ''  
-    PORT = 65410        
-    file_transfer_server = FileTransferServer(HOST, PORT)
+    HOST = ''                                              # Listen on all incoming IP addresses
+    PORT = 65410                                           # Port listening on    
+    file_transfer_server = FileTransferServer(HOST, PORT)  # Create a FileTransferServer object
     file_transfer_server.start_server()

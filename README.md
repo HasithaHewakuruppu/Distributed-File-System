@@ -1,25 +1,29 @@
-# Distributed-File-System
-Distributed File System - Group Project 
-
 # Distributed File System Project
 
 This project implements a basic distributed file system using Python. 
-It consists of three main components: a server, a seeder, and a client. 
-
-The server tracks the files available from seeders, 
-the seeder monitors a designated folder and informs the server about the file changes, 
-and the client can query the server to check if a file exists.
+## Architecture
+![architecture](https://github.com/HasithaHewakuruppu/Distributed-File-System/assets/73450109/dc423a30-8c0b-425b-b404-cfbdb3a80c2e)
 
 ## Getting Started
+The following instructions have two different ways to run the program.
 
-These instructions will help you set up and run the project on your machine.
+### Running the program via .exe
+1) Clone the repository to your machine
+2) Create two folders within the directory for your Designated Folder and Downloads
+3) Run "DistributedFileSystemGUI.exe"
 
-1) Install the required dependecies using pip install -r requirements.txt
-2) Make folders called DesignatedFolder and Downloads in the current directory of the files
-3) Run the folder_monitor.py if you want to share files with the network if not don't
-4) Run the client.py and search a file you like to download with the extension. eg physics.pdf
-5) Then follow the prompts 
+### Running the program via client_gui.py
+1) Clone the repository to your machine
+2) Install the required dependencies using pip install -r requirements.txt
+3) Create two folders within the directory for your Designated Folder and Downloads
+4) Run "client_gui.py"
+   
+## Using the application
+![GUI](https://github.com/HasithaHewakuruppu/Distributed-File-System/assets/73450109/dc1798e0-cb96-4bb2-96fa-6181fcde9e84)
 
-## Message for David
+When the application starts running you are presented with these options:
 
-p2p if you can ??
+1) **Select directory:** Choose the directory to where you want your downloaded files to save to.
+2) **Search file:** Enter the name of the file along with the file extension type to search. E.g. text.txt
+3) **Select file to monitor:** Choose the directory to where you want the folder_monitor to access and monitor.
+4) **Launch Monitor**: Once you have chosen your file monitor directory in Step 3, this button will start the folder_monitor monitoring of directory.

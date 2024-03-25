@@ -8,15 +8,13 @@ This project implements a basic distributed file system using Python.
 The following instructions have two different ways to run the program.
 
 ### Running the program via .exe
-1) Clone the repository to your machine
-2) Create two folders within the directory for your Designated Folder and Downloads
-3) Run "DistributedFileSystemGUI.exe"
+1) Create two folders within the directory for your Designated Folder and Downloads
+2) Run "DistributedFileSystemGUI.exe"
 
 ### Running the program via client_gui.py
-1) Clone the repository to your machine
-2) Install the required dependencies using pip install -r requirements.txt
-3) Create two folders within the directory for your Designated Folder and Downloads
-4) Run "client_gui.py"
+1) Install the required dependencies using pip install -r requirements.txt
+2) Create two folders within the directory for your Designated Folder and Downloads
+3) Run "client_gui.py"
    
 ## Using the application
 ![GUI](https://github.com/HasithaHewakuruppu/Distributed-File-System/assets/73450109/dc1798e0-cb96-4bb2-96fa-6181fcde9e84)
